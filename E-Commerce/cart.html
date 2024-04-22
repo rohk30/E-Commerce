@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ECommerce Website</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    
+    <section id="header">
+        <a href="#"><img src="img/logo.png" class="logo" alt=""></a>
+        <div>
+            <ul id="navbar">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="shop.html">Shop</a></li>
+                <li><a href="blog.html">Blog</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="contact.html">Contact</a></li>
+                <li><a class="active" href="cart.html"><i class="fa-solid fa-cart-shopping"></i> </a></li>
+            </ul>
+        </div>
+    </section>
+
+    <section id="page-header" class="about-header" style="margin-top: 6%;">
+        <h2 style="color: #fff;">#let's_talk</h2>
+        <p style="color: #fff;">LEAVE A MESSAGE. We love to hear from you</p>
+    </section>
+    
+    <section id="cart" class="section-p1">
+        <table style="width: 100%;">
+            <thead>
+                <tr>
+                    <td>Remove</td>
+                    <td>Image</td>
+                    <td>Product</td>
+                    <td>Price</td>
+                    <td>Quantity</td>
+                    <td>SubTotal</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><a href="#"><i class="fa-solid fa-circle-xmark"></i></a></td>
+                    <td><img src="img/products/f1.jpg"></td>
+                    <td>Cartoon Astronaut T-Shirts</td>
+                    <td>₹2399</td>
+                    <td><input type="number" value="1"></td>
+                    <td class="subtotal">₹2399</td>
+                </tr>
+                <tr>
+                    <td><a href="#"><i class="fa-solid fa-circle-xmark"></i></a></td>
+                    <td><img src="img/products/f2.jpg"></td>
+                    <td>Cartoon Astronaut T-Shirts</td>
+                    <td>₹2599</td>
+                    <td><input type="number" value="1"></td>
+                    <td class="subtotal">₹2599</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section id="cart-add" class="section-p1">
+        <div id="coupon">
+            <h3>Apply Coupon</h3>
+            <div>
+                <input type="text" id="coupon-input" placeholder="Enter your Coupon">
+                <button id="apply-coupon-button" class="ca-b-1">Apply</button>
+            </div>
+        </div>
+
+        <div id="subtotal">
+            <h3>Cart Totals</h3>
+            <table>
+                <tr>
+                    <td>Cart Subtotal</td>
+                    <td id="cart-subtotal">₹4998</td>
+                </tr>
+                <tr>
+                    <td>Shipping</td>
+                    <td>Free</td>
+                </tr>
+                <tr>
+                    <td>Discount</td>
+                    <td id="cart-discount">₹0.00</td>
+                </tr>
+                <tr>
+                    <td><strong>Total</strong></td>
+                    <td id="cart-total"><strong>₹4998.00</strong></td>
+                </tr>
+            </table>
+            <button class="ca-b-1">Proceed to CheckOut</button>
+        </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            function updateCart() {
+                var cartTotal = 0; // Initialize cartTotal to accumulate total
+    
+                // Get all input elements of type number
+                var quantityInputs = document.querySelectorAll('input[type="number"]');
+    
+                // Loop through each input element
+                quantityInputs.forEach(function (input) {
+                    // Add event listener for 'input' event
+                    input.addEventListener('input', function () {
+                        // Get the parent row of the input element
+                        var parentRow = this.parentNode.parentNode;
+    
+                        // Get the price and quantity from the row
+                        var price = parseFloat(parentRow.querySelector('td:nth-child(4)').textContent.replace('₹', ''));
+                        var quantity = parseInt(this.value);
+    
+                        // If quantity is 0, prompt confirmation
+                        if (quantity === 0) {
+                            var confirmation = confirm("Are you sure you want to remove this product from the cart?");
+                            if (confirmation) {
+                                parentRow.remove();
+                            } else {
+                                // Restore quantity to 1 if user cancels
+                                this.value = 1;
+                            }
+                        }
+    
+                        // Calculate subtotal
+                        var subtotal = price * quantity;
+    
+                        // Update the subtotal in the row
+                        parentRow.querySelector('.subtotal').textContent = '₹' + subtotal;
+    
+                        // Update cart total
+                        updateCartTotal();
+                    });
+                });
+    
+                // Apply discount when the apply button is clicked
+                var applyButton = document.querySelector('#coupon button');
+                applyButton.addEventListener('click', function () {
+                    // Update cart total
+                    updateCartTotal();
+                });
+            }
+    
+            // Function to update cart total
+            function updateCartTotal() {
+                var cartTotal = 0; // Initialize cartTotal to accumulate total
+                var subtotalElements = document.querySelectorAll('.subtotal');
+    
+                // Loop through each subtotal element
+                subtotalElements.forEach(function (subtotalElement) {
+                    var subtotal = parseFloat(subtotalElement.textContent.replace('₹', ''));
+                    cartTotal += subtotal;
+                });
+    
+                // Apply discount if coupon is applied
+                var discount = 0;
+                var couponInput = document.getElementById('coupon-input'); // Target the coupon input field by its id
+                if (couponInput.value) {
+                    // Apply 5% discount
+                    discount = cartTotal * 0.05;
+                }
+    
+                // Update the cart subtotal, discount, and total
+                document.getElementById('cart-subtotal').textContent = '₹' + cartTotal;
+                document.getElementById('cart-discount').textContent = '₹' + discount.toFixed(2);
+                document.getElementById('cart-total').textContent = '₹' + (cartTotal - discount).toFixed(2);
+            }
+    
+            // Call the updateCart function to initialize the cart
+            updateCart();
+        });
+    </script>
+    
+    
+    
+    
+    
+    
+    
+    
+</body>
+</html>
